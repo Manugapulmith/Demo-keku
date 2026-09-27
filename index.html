@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEKU Cafe - Luxury Artisanal Experience | Nugegoda, Sri Lanka</title>
+    <!-- Fonts: Space Grotesk & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            DEFAULT: '#0E1726',
+                            card: '#172033',
+                            border: '#23304B'
+                        },
+                        mint: {
+                            DEFAULT: '#A8C3B5',
+                            glow: 'rgba(168, 195, 181, 0.25)'
+                        },
+                        ivory: {
+                            DEFAULT: '#F2F0E9',
+                            muted: '#A0AAB8'
+                        },
+                        coral: {
+                            DEFAULT: '#C97B68',
+                            hover: '#B56754'
+                        }
+                    },
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        body: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base setup */
+        body {
+            background-color: #0E1726;
+            color: #F2F0E9;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Custom Lerp Cursor */
+        @media (pointer: fine) {
+            #cursor-dot {
+                pointer-events: none;
+                position: fixed;
+                top: 0; left: 0;
+                width: 8px; height: 8px;
+                background-color: #A8C3B5;
+                border-radius: 50%;
+                z-index: 9999;
+                transform: translate(-50%, -50%);
+                transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease;
+            }
+            #cursor-ring {
+                pointer-events: none;
+                position: fixed;
+                top: 0; left: 0;
+                width: 36px; height: 36px;
+                border: 1.5px solid rgba(168, 195, 181, 0.5);
+                border-radius: 50%;
+                z-index: 9998;
+                transform: translate(-50%, -50%);
+                transition: border-color 0.2s ease, width 0.2s ease, height 0.2s ease;
+            }
+        }
+
+        /* 3D Flip Book Cards Styling */
+        .book-container {
+            perspective: 1200px;
+        }
+
+        .book {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            border-radius: 16px;
+            background-color: #172033;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .book .cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            background: linear-gradient(145deg, #1E293B, #172033);
+            transform-origin: left;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
+            backface-visibility: hidden;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+        }
+
+        /* Hover flip trigger for fine pointers (Desktop) */
+        @media (hover: hover) and (pointer: fine) {
+            .book:hover .cover {
+                transform: rotateY(-80deg);
+            }
+        }
+
+        /* Active / Mobile class flip state */
+        .book.is-flipped .cover {
+            transform: rotateY(-80deg) !important;
+        }
+
+        /* Uiverse Slide-Over MENU Button */
+        .uiverse-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 24px;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #A8C3B5 0%, #7E9E8E 100%);
+            color: #0E1726;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(168, 195, 181, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .uiverse-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .uiverse-btn:hover::before {
+            left: 100%;
+        }
+
+        .uiverse-btn:hover {
+            transform: translateY(-2deg);
+            box-shadow: 0 8px 25px rgba(168, 195, 181, 0.5);
+        }
+
+        /* Uiverse 5-Star Rating Control */
+        .rating-star-group input {
+            display: none;
+        }
+        .rating-star-group label {
+            cursor: pointer;
+            color: #2D3748;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .rating-star-group label:hover,
+        .rating-star-group label:hover ~ label,
+        .rating-star-group input:checked ~ label {
+            color: #F59E0B;
+        }
+        .rating-star-group input:checked + label {
+            animation: starPulse 0.4s ease-in-out;
+        }
+
+        @keyframes starPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.35) rotate(15deg); }
+            100% { transform: scale(1); }
+        }
+
+        /* Glassmorphism containers */
+        .glass-panel {
+            background: rgba(23, 32, 51, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Toast notification */
+        #toast {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        /* Scrollbar aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0E1726;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #23304B;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A8C3B5;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-mint selection:text-navy">
+
+    <!-- Custom Lerp Cursor Elements -->
+    <div id="cursor-dot" class="hidden md:block"></div>
+    <div id="cursor-ring" class="hidden md:block"></div>
+
+    <!-- PROMINENT DEMO NOTICE BANNER -->
+    <div class="fixed top-0 left-0 right-0 z-50 bg-navy-card/95 backdrop-blur-md border-b border-mint/20 text-xs sm:text-sm py-2 px-4 text-center flex items-center justify-between shadow-lg">
+        <div class="flex items-center justify-center space-x-2 mx-auto text-ivory">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-mint text-navy uppercase tracking-wide">Demo Mode</span>
+            <span class="hidden sm:inline font-medium">CONCEPT WEBSITE FOR KEKU CAFE (NUGEGODA)</span>
+            <span class="text-ivory-muted hidden md:inline">·</span>
+            <span class="text-mint font-semibold">Built by Manuga Pulmith (Interactive Sales Prototype)</span>
+        </div>
+        <button id="close-demo-banner" class="text-ivory-muted hover:text-ivory text-sm px-2 py-1" title="Dismiss top banner">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- MAIN NAVBAR -->
+    <header class="sticky top-10 z-40 px-4 sm:px-8 max-w-7xl mx-auto mt-12">
+        <nav class="glass-panel rounded-full px-6 py-3.5 flex items-center justify-between shadow-2xl transition-all duration-300">
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center space-x-3 group">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-mint to-coral flex items-center justify-center text-navy font-display font-bold text-xl shadow-md group-hover:rotate-12 transition-transform">
+                    K
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-display font-bold text-lg tracking-wider text-ivory uppercase group-hover:text-mint transition-colors">KEKU CAFE</span>
+                    <span class="text-[10px] tracking-widest text-ivory-muted uppercase">Nugegoda · Sri Lanka</span>
+                </div>
+            </a>
+
+            <!-- Navigation Links (Desktop) -->
+            <div class="hidden lg:flex items-center space-x-8 text-sm font-medium text-ivory-muted">
+                <a href="#signature" class="hover:text-mint transition-colors">Signature Picks</a>
+                <a href="#menu" class="hover:text-mint transition-colors">Full Menu</a>
+                <a href="#experience" class="hover:text-mint transition-colors">Experience</a>
+                <a href="#feedback" class="hover:text-mint transition-colors">Reviews & Feedback</a>
+            </div>
+
+            <!-- Action Buttons: Cart & Uiverse Menu Button -->
+            <div class="flex items-center space-x-4">
+                <!-- Cart Trigger Button -->
+                <button id="open-cart-btn" class="relative p-2.5 rounded-full bg-navy-card border border-navy-border hover:border-mint/50 text-ivory hover:text-mint transition-all">
+                    <i class="fa-solid fa-basket-shopping text-lg"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-coral text-white font-bold text-[10px] rounded-full flex items-center justify-center scale-0 transition-transform">
+                        0
+                    </span>
+                </button>
+
+                <!-- Uiverse Menu / Order CTA Button -->
+                <a href="#menu" class="uiverse-btn text-xs sm:text-sm">
+                    <i class="fa-solid fa-utensils mr-2"></i> View Menu
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative pt-12 pb-20 sm:pt-20 sm:pb-32 px-4 sm:px-6 max-w-7xl mx-auto overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- Left Hero Content -->
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-mint/10 border border-mint/30 text-mint text-xs font-semibold uppercase tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-mint animate-ping"></span>
+                    <span>Nugegoda's Premier Artisanal Sanctuary</span>
+                </div>
+
+                <h1 class="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-ivory leading-[1.1]">
+                    Where Crafted Coffee Meets <span class="text-transparent bg-clip-text bg-gradient-to-r from-mint via-ivory to-coral">Culinary Mastery.</span>
+                </h1>
+
+                <p class="text-ivory-muted text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 font-light leading-relaxed">
+                    Step into an ambiance engineered for connoisseurs. Experience handcrafted espresso blends, signature artisanal dishes, and serene comfort right in the heart of Nugegoda.
+                </p>
+
+                <!-- CTA Row -->
+                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
+                    <a href="#menu" class="w-full sm:w-auto px-8 py-4 rounded-full bg-coral hover:bg-coral-hover text-white font-display font-semibold text-center transition-all shadow-lg shadow-coral/20 hover:shadow-coral/40 hover:-translate-y-0.5">
+                        Explore Full Menu
+                    </a>
+                    <a href="#signature" class="w-full sm:w-auto px-8 py-4 rounded-full bg-navy-card border border-navy-border hover:border-mint text-ivory font-display font-medium text-center transition-all hover:-translate-y-0.5">
+                        Signature Picks <i class="fa-solid fa-arrow-down-long ml-2 text-mint"></i>
+                    </a>
+                </div>
+
+                <!-- Live Status & Stats Bar -->
+                <div class="pt-8 border-t border-navy-border/60 grid grid-cols-3 gap-4 text-center lg:text-left">
+                    <div>
+                        <div class="font-display text-2xl sm:text-3xl font-bold text-mint">4.9 ★</div>
+                        <div class="text-xs text-ivory-muted">500+ Guest Reviews</div>
+                    </div>
+                    <div>
+                        <div class="font-display text-2xl sm:text-3xl font-bold text-ivory">7 AM - 10 PM</div>
+                        <div class="text-xs text-ivory-muted">Open Daily in Nugegoda</div>
+                    </div>
+                    <div>
+                        <div class="font-display text-2xl sm:text-3xl font-bold text-coral">100%</div>
+                        <div class="text-xs text-ivory-muted">Fresh Artisanal Ingredients</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Hero Visual Collage -->
+            <div class="lg:col-span-5 relative">
+                <div class="relative mx-auto max-w-md lg:max-w-none">
+                    <!-- Ambient Glow -->
+                    <div class="absolute -top-10 -bottom-10 -left-10 -right-10 bg-gradient-to-tr from-mint/20 to-coral/20 rounded-full blur-3xl -z-10"></div>
+                    
+                    <div class="glass-panel p-3 rounded-3xl shadow-2xl relative">
+                        <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1000&q=80" 
+                             alt="KEKU Cafe Interior Experience" 
+                             class="w-full h-[420px] object-cover rounded-2xl shadow-inner">
+
+                        <!-- Floating Badge Card -->
+                        <div class="absolute -bottom-6 -left-6 glass-panel p-4 rounded-2xl border border-mint/30 shadow-2xl max-w-xs hidden sm:flex items-center space-x-3">
+                            <div class="w-12 h-12 rounded-xl bg-mint/20 flex items-center justify-center text-mint text-xl">
+                                <i class="fa-solid fa-mug-hot"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-mint">Signature Brews</h4>
+                                <p class="text-xs text-ivory-muted">Single-origin Arabica freshly roasted</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SIGNATURE PICKS SECTION (3D FLIP-BOOK CARDS) -->
+    <section id="signature" class="py-20 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+            <span class="text-xs font-bold uppercase tracking-widest text-mint px-3 py-1 rounded-full bg-mint/10 border border-mint/20">
+                Interactive Showcase
+            </span>
+            <h2 class="font-display text-3xl sm:text-5xl font-bold text-ivory">
+                Signature Culinary Creation Books
+            </h2>
+            <p class="text-ivory-muted text-sm sm:text-base">
+                <span class="hidden md:inline"><i class="fa-solid fa-mouse-pointer text-mint mr-1"></i> Hover over a card to open its detailed flavor profile book!</span>
+                <span class="md:hidden"><i class="fa-solid fa-mobile-screen-button text-mint mr-1"></i> Cards automatically flip as you scroll through or tap them!</span>
+            </p>
+        </div>
+
+        <!-- 3D Books Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
+            
+            <!-- Book 1: Signature Truffle Avocado Toast -->
+            <div class="book-container">
+                <div class="book js-flip-card group" data-item-id="sig-1">
+                    <!-- Cover (Front) -->
+                    <div class="cover p-6 flex flex-col justify-between border border-navy-border">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-2.5 py-1 rounded-md bg-mint/20 text-mint text-[11px] font-semibold uppercase tracking-wider">Chef's Special</span>
+                                <span class="text-xs text-ivory-muted"><i class="fa-solid fa-rotate text-mint mr-1"></i> Flip</span>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=600&q=80" 
+                                 alt="Signature Truffle Avocado Toast" 
+                                 class="w-full h-44 object-cover rounded-xl mb-4 shadow-md">
+                            <h3 class="font-display font-bold text-xl text-ivory group-hover:text-mint transition-colors">Truffle Avocado Toast</h3>
+                            <p class="text-xs text-ivory-muted mt-1">Sourdough, poached organic eggs, white truffle glaze.</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-3 border-t border-navy-border">
+                            <span class="font-display font-bold text-lg text-mint">LKR 2,400</span>
+                            <span class="text-xs text-coral font-medium">Explore Details &rarr;</span>
+                        </div>
+                    </div>
+                    <!-- Back (Inside Details Page) -->
+                    <div class="p-6 h-full flex flex-col justify-between rounded-16 bg-navy-card border border-mint/30">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs text-mint font-semibold uppercase tracking-wider"><i class="fa-solid fa-leaf mr-1"></i> Vegetarian Option</span>
+                                <span class="text-xs text-ivory-muted">Prep: 12 mins</span>
+                            </div>
+                            <h4 class="font-display font-bold text-lg text-ivory mb-2">Flavor Profile & Ingredients</h4>
+                            <p class="text-xs text-ivory-muted leading-relaxed mb-4">
+                                Artisanal sourdough baked daily in Nugegoda, topped with smashed hass avocado, organic poached eggs, microgreens, and drizzled with imported Italian white truffle oil.
+                            </p>
+                            <div class="space-y-1.5 text-xs text-ivory-muted">
+                                <div class="flex items-center"><i class="fa-solid fa-check text-mint mr-2"></i> Organic Local Eggs</div>
+                                <div class="flex items-center"><i class="fa-solid fa-check text-mint mr-2"></i> Housemade Sourdough</div>
+                                <div class="flex items-center"><i class="fa-solid fa-check text-mint mr-2"></i> Cold-pressed Olive Glaze</div>
+                            </div>
+                        </div>
+                        <button onclick="addToCart('sig-1', 'Truffle Avocado Toast', 2400, 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=300&q=80')" 
+                                class="w-full py-3 rounded-xl bg-mint hover:bg-mint/90 text-navy font-display font-bold text-sm transition-colors flex items-center justify-center space-x-2 shadow-lg shadow-mint/20">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>Add to Order · LKR 2,400</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Book 2: KEKU Smoked Beef Burger -->
+            <div class="book-container">
+                <div class="book js-flip-card group" data-item-id="sig-2">
+                    <!-- Cover (Front) -->
+                    <div class="cover p-6 flex flex-col justify-between border border-navy-border">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-2.5 py-1 rounded-md bg-coral/20 text-coral text-[11px] font-semibold uppercase tracking-wider">Best Seller</span>
+                                <span class="text-xs text-ivory-muted"><i class="fa-solid fa-rotate text-mint mr-1"></i> Flip</span>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80" 
+                                 alt="KEKU Smoked Beef Burger" 
+                                 class="w-full h-44 object-cover rounded-xl mb-4 shadow-md">
+                            <h3 class="font-display font-bold text-xl text-ivory group-hover:text-mint transition-colors">KEKU Smoked Burger</h3>
+                            <p class="text-xs text-ivory-muted mt-1">Double Angus beef patty, aged cheddar, secret relish.</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-3 border-t border-navy-border">
+                            <span class="font-display font-bold text-lg text-mint">LKR 3,100</span>
+                            <span class="text-xs text-coral font-medium">Explore Details &rarr;</span>
+                        </div>
+                    </div>
+                    <!-- Back (Inside Details Page) -->
+                    <div class="p-6 h-full flex flex-col justify-between rounded-16 bg-navy-card border border-coral/30">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs text-coral font-semibold uppercase tracking-wider"><i class="fa-solid fa-fire mr-1"></i> Premium Beef</span>
+                                <span class="text-xs text-ivory-muted">Prep: 15 mins</span>
+                            </div>
+                            <h4 class="font-display font-bold text-lg text-ivory mb-2">Flavor Profile & Ingredients</h4>
+                            <p class="text-xs text-ivory-muted leading-relaxed mb-4">
+                                200g juicy smashed Angus beef patties layered with melted sharp cheddar, caramelized shallots, crispy smoked bacon, and signature KEKU house relish on toasted brioche.
+                            </p>
+                            <div class="space-y-1.5 text-xs text-ivory-muted">
+                                <div class="flex items-center"><i class="fa-solid fa-check text-coral mr-2"></i> 100% Prime Angus Beef</div>
+                                <div class="flex items-center"><i class="fa-solid fa-check text-coral mr-2"></i> Handcrafted Brioche</div>
+                                <div class="flex items-center"><i class="fa-solid fa-check text-coral mr-2"></i> Served with Hand-Cut Fries</div>
+                            </div>
+                        </div>
+                        <button onclick="addToCart('sig-2', 'KEKU Smoked Burger', 3100, 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=300&q=80')" 
+                                class="w-full py-3 rounded-xl bg-coral hover:bg-coral-hover text-white font-display font-bold text-sm transition-colors flex items-center justify-center space-x-2 shadow-lg shadow-coral/20">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>Add to Order · LKR 3,100</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Book 3: Vanilla Bean Spanish Latte -->
+            <div class="book-container">
+                <div class="book js-flip-card group" data-item-id="sig-3">
+                    <!-- Cover (Front) -->
+                    <div class="cover p-6 flex flex-col justify-between border border-navy-border">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-2.5 py-1 rounded-md bg-mint/20 text-mint text-[11px] font-semibold uppercase tracking-wider">Artisanal Brew</span>
+                                <span class="text-xs text-ivory-muted"><i class="fa-solid fa-rotate text-mint mr-1"></i> Flip</span>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80" 
+                                 alt="Vanilla Bean Spanish Latte" 
+                                 class="w-full h-44 object-cover rounded-xl mb-4 shadow-md">
+                            <h3 class="font-display font-bold text-xl text-ivory group-hover:text-mint transition-colors">Vanilla Spanish Latte</h3>
+                            <p class="text-xs text-ivory-muted mt-1">Double espresso shot, condensed milk, Madagascar vanilla.</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-3 border-t border-navy-border">
+                            <span class="font-display font-bold text-lg text-mint">LKR 1,650</span>
+                            <span class="text-xs text-coral font-medium">Explore Details &rarr;</span>
+                        </div>
+                    </div>
+                    <!-- Back (Inside Details Page) -->
+                    <div class="p-6 h-full flex flex-col justify-between rounded-16 bg-navy-card border border-mint/30">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs text-mint font-semibold uppercase tracking-wider"><i class="fa-solid fa-mug-hot mr-1"></i> Barista Crafted</span>
+                                <span class="text-xs text-ivory-muted">Serve: Iced / Hot</span>
+                            </div>
+                            <h4 class="font-display font-bold text-lg text-ivory mb-2">Brewing Method & Tasting Notes</h4>
+                            <p class="text-xs text-ivory-muted leading-relaxed mb-4">
+                                Single-origin espresso extracted under 9 bars, blended with velvety steamed whole milk, real Madagascar vanilla bean infusion, and smooth condensed milk sweetness.
+                            </p>
+                            <div class="space-y-1.5 text-xs text-ivory-muted">
+                                <div class="flex items-center"><i class="fa-solid fa-check text-mint mr-2"></i> Custom Roast Espresso</div>
+                                <div class="flex items-center"><i class="fa-solid fa-check text-mint mr-2"></i> Natural Vanilla Extract</div>
+                                <div class="flex items-center"><i class="fa-solid fa-check text-mint mr-2"></i> Choice of Oat or Whole Milk</div>
+                            </div>
+                        </div>
+                        <button onclick="addToCart('sig-3', 'Vanilla Spanish Latte', 1650, 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=300&q=80')" 
+                                class="w-full py-3 rounded-xl bg-mint hover:bg-mint/90 text-navy font-display font-bold text-sm transition-colors flex items-center justify-center space-x-2 shadow-lg shadow-mint/20">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>Add to Order · LKR 1,650</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FULL INTERACTIVE MENU SECTION WITH FILTERING & SEARCH -->
+    <section id="menu" class="py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-navy-border/50">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-widest text-mint px-3 py-1 rounded-full bg-mint/10 border border-mint/20">
+                    Full Gastronomic Menu
+                </span>
+                <h2 class="font-display text-3xl sm:text-5xl font-bold text-ivory mt-3">
+                    Crafted Foods & Drinks
+                </h2>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative min-w-[280px]">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-ivory-muted"></i>
+                <input type="text" id="menu-search" placeholder="Search dish, coffee, dessert..." 
+                       class="w-full pl-11 pr-4 py-3 rounded-full bg-navy-card border border-navy-border text-ivory text-sm focus:outline-none focus:border-mint transition-colors">
+            </div>
+        </div>
+
+        <!-- Filter Category Tabs -->
+        <div class="flex items-center space-x-2 overflow-x-auto pb-4 mb-8 no-scrollbar" id="category-tabs">
+            <button class="cat-btn active px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap bg-mint text-navy transition-all" data-category="all">
+                All (<span id="count-all">8</span>)
+            </button>
+            <button class="cat-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap bg-navy-card border border-navy-border text-ivory-muted hover:text-ivory transition-all" data-category="breakfast">
+                Breakfast
+            </button>
+            <button class="cat-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap bg-navy-card border border-navy-border text-ivory-muted hover:text-ivory transition-all" data-category="burgers">
+                Burgers
+            </button>
+            <button class="cat-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap bg-navy-card border border-navy-border text-ivory-muted hover:text-ivory transition-all" data-category="pasta">
+                Pasta & Mains
+            </button>
+            <button class="cat-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap bg-navy-card border border-navy-border text-ivory-muted hover:text-ivory transition-all" data-category="coffee">
+                Coffee & Drinks
+            </button>
+            <button class="cat-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap bg-navy-card border border-navy-border text-ivory-muted hover:text-ivory transition-all" data-category="desserts">
+                Desserts
+            </button>
+        </div>
+
+        <!-- Menu Grid Container -->
+        <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <!-- Item 1 -->
+            <div class="menu-item-card glass-panel rounded-2xl overflow-hidden border border-navy-border flex flex-col justify-between group" data-category="breakfast" data-name="eggs benedict salmon">
+                <div class="relative overflow-hidden h-48">
+                    <img src="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?auto=format&fit=crop&w=500&q=80" alt="Smoked Salmon Benedict" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 right-3 bg-navy/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-bold text-mint uppercase">Breakfast</span>
+                </div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-ivory group-hover:text-mint transition-colors">Smoked Salmon Benedict</h3>
+                        <p class="text-xs text-ivory-muted mt-1.5 line-clamp-2">Poached eggs, Norwegian cured salmon, hollandaise on brioche.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-navy-border">
+                        <span class="font-display font-bold text-base text-mint">LKR 2,850</span>
+                        <button onclick="addToCart('m-1', 'Smoked Salmon Benedict', 2850, 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?auto=format&fit=crop&w=300&q=80')" 
+                                class="px-3.5 py-2 rounded-xl bg-navy-card border border-mint/40 hover:bg-mint hover:text-navy text-mint font-semibold text-xs transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="menu-item-card glass-panel rounded-2xl overflow-hidden border border-navy-border flex flex-col justify-between group" data-category="burgers" data-name="crispy chicken burger spicy">
+                <div class="relative overflow-hidden h-48">
+                    <img src="https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=500&q=80" alt="Sriracha Crispy Chicken Burger" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 right-3 bg-navy/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-bold text-coral uppercase">Spicy</span>
+                </div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-ivory group-hover:text-mint transition-colors">Sriracha Chicken Burger</h3>
+                        <p class="text-xs text-ivory-muted mt-1.5 line-clamp-2">Crispy buttermilk fried chicken breast, spicy slaw, honey mustard.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-navy-border">
+                        <span class="font-display font-bold text-base text-mint">LKR 2,600</span>
+                        <button onclick="addToCart('m-2', 'Sriracha Chicken Burger', 2600, 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=300&q=80')" 
+                                class="px-3.5 py-2 rounded-xl bg-navy-card border border-mint/40 hover:bg-mint hover:text-navy text-mint font-semibold text-xs transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="menu-item-card glass-panel rounded-2xl overflow-hidden border border-navy-border flex flex-col justify-between group" data-category="pasta" data-name="creamy truffle mushroom fettuccine">
+                <div class="relative overflow-hidden h-48">
+                    <img src="https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=500&q=80" alt="Truffle Mushroom Fettuccine" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 right-3 bg-navy/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-bold text-mint uppercase">Chef's Pick</span>
+                </div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-ivory group-hover:text-mint transition-colors">Truffle Mushroom Fettuccine</h3>
+                        <p class="text-xs text-ivory-muted mt-1.5 line-clamp-2">Wild portobello mushrooms, fresh cream, shaved parmesan, truffle glaze.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-navy-border">
+                        <span class="font-display font-bold text-base text-mint">LKR 2,950</span>
+                        <button onclick="addToCart('m-3', 'Truffle Mushroom Fettuccine', 2950, 'https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=300&q=80')" 
+                                class="px-3.5 py-2 rounded-xl bg-navy-card border border-mint/40 hover:bg-mint hover:text-navy text-mint font-semibold text-xs transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="menu-item-card glass-panel rounded-2xl overflow-hidden border border-navy-border flex flex-col justify-between group" data-category="coffee" data-name="iced flat white artisanal espresso">
+                <div class="relative overflow-hidden h-48">
+                    <img src="https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=500&q=80" alt="Iced Artisanal Flat White" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 right-3 bg-navy/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-bold text-mint uppercase">Cold Coffee</span>
+                </div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-ivory group-hover:text-mint transition-colors">Iced Artisanal Flat White</h3>
+                        <p class="text-xs text-ivory-muted mt-1.5 line-clamp-2">Double ristretto espresso poured over microfoam iced milk.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-navy-border">
+                        <span class="font-display font-bold text-base text-mint">LKR 1,450</span>
+                        <button onclick="addToCart('m-4', 'Iced Artisanal Flat White', 1450, 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=300&q=80')" 
+                                class="px-3.5 py-2 rounded-xl bg-navy-card border border-mint/40 hover:bg-mint hover:text-navy text-mint font-semibold text-xs transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="menu-item-card glass-panel rounded-2xl overflow-hidden border border-navy-border flex flex-col justify-between group" data-category="desserts" data-name="biscoff cheesecake slice dessert">
+                <div class="relative overflow-hidden h-48">
+                    <img src="https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=500&q=80" alt="Lotus Biscoff Cheesecake" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 right-3 bg-navy/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-bold text-coral uppercase">Sweet</span>
+                </div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-ivory group-hover:text-mint transition-colors">Lotus Biscoff Cheesecake</h3>
+                        <p class="text-xs text-ivory-muted mt-1.5 line-clamp-2">Creamy baked cheesecake layered with caramelized cookie spread.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-navy-border">
+                        <span class="font-display font-bold text-base text-mint">LKR 1,800</span>
+                        <button onclick="addToCart('m-5', 'Lotus Biscoff Cheesecake', 1800, 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=300&q=80')" 
+                                class="px-3.5 py-2 rounded-xl bg-navy-card border border-mint/40 hover:bg-mint hover:text-navy text-mint font-semibold text-xs transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 6 -->
+            <div class="menu-item-card glass-panel rounded-2xl overflow-hidden border border-navy-border flex flex-col justify-between group" data-category="coffee" data-name="matcha green tea latte cold hot">
+                <div class="relative overflow-hidden h-48">
+                    <img src="https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=500&q=80" alt="Uji Ceremonial Matcha Latte" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 right-3 bg-navy/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-bold text-mint uppercase">Imported</span>
+                </div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-ivory group-hover:text-mint transition-colors">Ceremonial Uji Matcha Latte</h3>
+                        <p class="text-xs text-ivory-muted mt-1.5 line-clamp-2">Authentic Japanese ceremonial grade green tea whisked with milk.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-navy-border">
+                        <span class="font-display font-bold text-base text-mint">LKR 1,750</span>
+                        <button onclick="addToCart('m-6', 'Ceremonial Uji Matcha Latte', 1750, 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=300&q=80')" 
+                                class="px-3.5 py-2 rounded-xl bg-navy-card border border-mint/40 hover:bg-mint hover:text-navy text-mint font-semibold text-xs transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 7 -->
+            <div class="menu-item-card glass-panel rounded-2xl overflow-hidden border border-navy-border flex flex-col justify-between group" data-category="breakfast" data-name="fluffy french toast berry brioche">
+                <div class="relative overflow-hidden h-48">
+                    <img src="https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=500&q=80" alt="Artisanal Berry French Toast" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 right-3 bg-navy/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-bold text-mint uppercase">Breakfast</span>
+                </div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-ivory group-hover:text-mint transition-colors">Brioche Berry French Toast</h3>
+                        <p class="text-xs text-ivory-muted mt-1.5 line-clamp-2">Thick cut brioche, fresh berries, whipped vanilla mascarpone, maple.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-navy-border">
+                        <span class="font-display font-bold text-base text-mint">LKR 2,200</span>
+                        <button onclick="addToCart('m-7', 'Brioche Berry French Toast', 2200, 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=300&q=80')" 
+                                class="px-3.5 py-2 rounded-xl bg-navy-card border border-mint/40 hover:bg-mint hover:text-navy text-mint font-semibold text-xs transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 8 -->
+            <div class="menu-item-card glass-panel rounded-2xl overflow-hidden border border-navy-border flex flex-col justify-between group" data-category="pasta" data-name="seafood pesto linguine pasta">
+                <div class="relative overflow-hidden h-48">
+                    <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=500&q=80" alt="Seafood Pesto Linguine" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 right-3 bg-navy/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-bold text-mint uppercase">Fresh</span>
+                </div>
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-lg text-ivory group-hover:text-mint transition-colors">Seafood Basil Pesto Pasta</h3>
+                        <p class="text-xs text-ivory-muted mt-1.5 line-clamp-2">Pan-seared jumbo prawns, calamari, pine nut pesto, cherry tomatoes.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-navy-border">
+                        <span class="font-display font-bold text-base text-mint">LKR 3,400</span>
+                        <button onclick="addToCart('m-8', 'Seafood Basil Pesto Pasta', 3400, 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=300&q=80')" 
+                                class="px-3.5 py-2 rounded-xl bg-navy-card border border-mint/40 hover:bg-mint hover:text-navy text-mint font-semibold text-xs transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ATMOSPHERE & EXPERIENCE SECTION -->
+    <section id="experience" class="py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-navy-border/50">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <span class="text-xs font-bold uppercase tracking-widest text-mint px-3 py-1 rounded-full bg-mint/10 border border-mint/20">
+                    The Nugegoda Haven
+                </span>
+                <h2 class="font-display text-3xl sm:text-5xl font-bold text-ivory">
+                    Designed for Conversations, Work, & Solitude
+                </h2>
+                <p class="text-ivory-muted text-base leading-relaxed">
+                    Whether you are searching for a quiet corner to brainstorm your next project with high-speed WiFi, or catching up over artisanal coffees with friends, KEKU Cafe offers an unhurried luxury space.
+                </p>
+                <div class="grid grid-cols-2 gap-4 pt-2">
+                    <div class="p-4 rounded-xl bg-navy-card border border-navy-border">
+                        <i class="fa-solid fa-wifi text-mint text-xl mb-2"></i>
+                        <h4 class="font-display font-bold text-sm text-ivory">Fiber High-Speed WiFi</h4>
+                        <p class="text-xs text-ivory-muted mt-1">Dedicated power outlets at every booth.</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-navy-card border border-navy-border">
+                        <i class="fa-solid fa-car text-coral text-xl mb-2"></i>
+                        <h4 class="font-display font-bold text-sm text-ivory">Spacious Parking</h4>
+                        <p class="text-xs text-ivory-muted mt-1">Hassle-free parking right outside.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Atmosphere Image Grid -->
+            <div class="grid grid-cols-2 gap-4">
+                <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80" alt="Coffee Brewing" class="rounded-2xl h-56 w-full object-cover shadow-lg hover:opacity-90 transition-opacity">
+                <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=600&q=80" alt="Cafe Seating Area" class="rounded-2xl h-56 w-full object-cover shadow-lg translate-y-6 hover:opacity-90 transition-opacity">
+            </div>
+        </div>
+    </section>
+
+    <!-- REVIEWS & UIVERSE INTERACTIVE FEEDBACK SECTION -->
+    <section id="feedback" class="py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-navy-border/50">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <!-- Left Side: Community Ratings -->
+            <div class="lg:col-span-6 space-y-6">
+                <span class="text-xs font-bold uppercase tracking-widest text-mint px-3 py-1 rounded-full bg-mint/10 border border-mint/20">
+                    Guest Experiences
+                </span>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-ivory">
+                    Loved by Coffee Connoisseurs & Foodies
+                </h2>
+                
+                <!-- Review Card 1 -->
+                <div class="glass-panel p-6 rounded-2xl border border-navy-border space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-mint/20 text-mint font-bold flex items-center justify-center">S</div>
+                            <div>
+                                <h4 class="font-display font-bold text-sm text-ivory">Sameera Fernando</h4>
+                                <span class="text-[10px] text-ivory-muted">Local Guide · Nugegoda</span>
+                            </div>
+                        </div>
+                        <div class="text-amber-400 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    </div>
+                    <p class="text-xs text-ivory-muted leading-relaxed">
+                        "Hands down the best Spanish Latte in Colombo / Nugegoda! The ambiance is super quiet and perfect for getting work done on a weekend morning."
+                    </p>
+                </div>
+
+                <!-- Review Card 2 -->
+                <div class="glass-panel p-6 rounded-2xl border border-navy-border space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-coral/20 text-coral font-bold flex items-center justify-center">D</div>
+                            <div>
+                                <h4 class="font-display font-bold text-sm text-ivory">Dilini Jayasinghe</h4>
+                                <span class="text-[10px] text-ivory-muted">Food Blogger</span>
+                            </div>
+                        </div>
+                        <div class="text-amber-400 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    </div>
+                    <p class="text-xs text-ivory-muted leading-relaxed">
+                        "The Truffle Avocado Toast is incredible. Fresh bread, perfect poached eggs, and generous portion size. 10/10 recommendation!"
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Side: Uiverse Interactive 5-Star Rating & Feedback Slate -->
+            <div class="lg:col-span-6">
+                <div class="glass-panel p-8 rounded-3xl border border-mint/30 shadow-2xl space-y-6 relative overflow-hidden" id="feedback-card">
+                    <div>
+                        <h3 class="font-display font-bold text-2xl text-ivory">Rate Your Experience</h3>
+                        <p class="text-xs text-ivory-muted mt-1">Leave instant feedback for the team at KEKU Cafe.</p>
+                    </div>
+
+                    <!-- Uiverse Glowing 5-Star Radio Rating Control -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-semibold text-ivory-muted uppercase tracking-wider">Overall Rating</label>
+                        <div class="rating-star-group flex items-center space-x-3 text-2xl" id="star-rating">
+                            <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 Stars"><i class="fa-solid fa-star"></i></label>
+                            <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 Stars"><i class="fa-solid fa-star"></i></label>
+                            <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 Stars"><i class="fa-solid fa-star"></i></label>
+                            <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 Stars"><i class="fa-solid fa-star"></i></label>
+                            <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 Star"><i class="fa-solid fa-star"></i></label>
+                        </div>
+                    </div>
+
+                    <!-- Emoji Selector -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-semibold text-ivory-muted uppercase tracking-wider">How was the vibe?</label>
+                        <div class="flex items-center space-x-4 text-2xl" id="emoji-selector">
+                            <button type="button" class="emoji-btn hover:scale-125 transition-transform" data-emoji="😍">😍</button>
+                            <button type="button" class="emoji-btn hover:scale-125 transition-transform" data-emoji="😊">😊</button>
+                            <button type="button" class="emoji-btn hover:scale-125 transition-transform" data-emoji="😐">😐</button>
+                            <button type="button" class="emoji-btn hover:scale-125 transition-transform" data-emoji="👎">👎</button>
+                        </div>
+                    </div>
+
+                    <!-- Comment Field -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-semibold text-ivory-muted uppercase tracking-wider">Your Message</label>
+                        <textarea id="feedback-text" rows="3" placeholder="Tell us what you enjoyed or how we can improve..." 
+                                  class="w-full p-3 rounded-xl bg-navy-card border border-navy-border text-ivory text-xs focus:outline-none focus:border-mint transition-colors"></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="button" id="submit-feedback-btn" class="w-full py-3.5 rounded-xl bg-mint hover:bg-mint/90 text-navy font-display font-bold text-sm transition-all shadow-lg shadow-mint/20">
+                        Submit Feedback
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-navy-card border-t border-navy-border py-12 px-4 sm:px-8 mt-20">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div class="space-y-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-mint flex items-center justify-center text-navy font-bold font-display">K</div>
+                    <span class="font-display font-bold text-lg text-ivory">KEKU CAFE</span>
+                </div>
+                <p class="text-xs text-ivory-muted leading-relaxed">
+                    Artisanal espresso bar and dining sanctuary in Nugegoda, Sri Lanka.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="font-display font-bold text-sm text-ivory uppercase tracking-wider mb-3">Location & Hours</h4>
+                <p class="text-xs text-ivory-muted leading-relaxed">
+                    Nugegoda, Western Province<br>
+                    Sri Lanka<br>
+                    Open Daily: 7:00 AM – 10:00 PM
+                </p>
+            </div>
+
+            <div>
+                <h4 class="font-display font-bold text-sm text-ivory uppercase tracking-wider mb-3">Direct Contact</h4>
+                <p class="text-xs text-ivory-muted leading-relaxed">
+                    Phone / WhatsApp: <a href="https://wa.me/94707593440" class="text-mint hover:underline">070 759 3440</a><br>
+                    Instagram: @kekucafe.lk
+                </p>
+            </div>
+
+            <div>
+                <h4 class="font-display font-bold text-sm text-ivory uppercase tracking-wider mb-3">Demo Notice</h4>
+                <p class="text-xs text-ivory-muted leading-relaxed">
+                    This interactive prototype website was crafted for demo & pitch purposes by <span class="text-mint font-semibold">Manuga Pulmith</span>.
+                </p>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto pt-8 border-t border-navy-border/60 flex flex-col sm:flex-row items-center justify-between text-xs text-ivory-muted gap-4">
+            <div>© 2026 KEKU Cafe. All rights reserved.</div>
+            <div>Built with precision by <a href="https://manugapulmith.github.io/Portfolio/" target="_blank" class="text-mint hover:underline font-semibold">Manuga Pulmith</a></div>
+        </div>
+    </footer>
+
+    <!-- SLIDE-OVER INTERACTIVE CART DRAWER -->
+    <div id="cart-drawer-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    
+    <aside id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-navy-card border-l border-navy-border z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between shadow-2xl">
+        <!-- Cart Header -->
+        <div class="p-6 border-b border-navy-border flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-basket-shopping text-mint text-xl"></i>
+                <h3 class="font-display font-bold text-lg text-ivory">Your Cafe Order</h3>
+            </div>
+            <button id="close-cart-btn" class="p-2 text-ivory-muted hover:text-ivory text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Cart Items Container -->
+        <div id="cart-items-list" class="p-6 flex-1 overflow-y-auto space-y-4">
+            <!-- Empty State default -->
+            <div id="empty-cart-msg" class="text-center py-12 space-y-3">
+                <i class="fa-solid fa-mug-saucer text-4xl text-ivory-muted/40"></i>
+                <p class="text-sm text-ivory-muted">Your order basket is currently empty.</p>
+                <a href="#menu" onclick="closeCart()" class="inline-block text-xs font-semibold text-mint hover:underline">
+                    Browse Full Menu &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- Cart Footer & Checkout -->
+        <div class="p-6 border-t border-navy-border bg-navy/80 space-y-4">
+            <div class="space-y-1.5 text-xs text-ivory-muted">
+                <div class="flex justify-between">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal" class="text-ivory font-semibold">LKR 0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Estimated Service / Packaging</span>
+                    <span class="text-mint font-semibold">Free</span>
+                </div>
+                <div class="flex justify-between text-sm font-bold text-ivory pt-2 border-t border-navy-border">
+                    <span>Total Amount</span>
+                    <span id="cart-total" class="text-mint font-display text-base">LKR 0</span>
+                </div>
+            </div>
+
+            <!-- Send to WhatsApp CTA Button -->
+            <button id="whatsapp-checkout-btn" onclick="submitOrderWhatsApp()" disabled 
+                    class="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-display font-bold text-sm transition-all flex items-center justify-center space-x-2 shadow-lg">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+                <span>Send Order to Cafe (070 759 3440)</span>
+            </button>
+            <p class="text-[10px] text-center text-ivory-muted">
+                Direct WhatsApp handoff formatted specifically for KEKU Cafe staff.
+            </p>
+        </div>
+    </aside>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 glass-panel px-5 py-3.5 rounded-2xl border border-mint/40 text-ivory text-xs font-medium shadow-2xl flex items-center space-x-3 transform translate-y-20 opacity-0 pointer-events-none">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-mint text-base"></i>
+        <span id="toast-msg">Item added to your order!</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC & INTERACTION ENGINE -->
+    <script>
+        /* Cart State */
+        let cart = [];
+
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorRing = document.getElementById('cursor-ring');
+        
+        let mouseX = 0, mouseY = 0;
+        let ringX = 0, ringY = 0;
+
+        if (window.matchMedia('(pointer: fine)').matches) {
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                if (cursorDot) {
+                    cursorDot.style.left = `${mouseX}px`;
+                    cursorDot.style.top = `${mouseY}px`;
+                }
+            });
+
+            function animateCursor() {
+                ringX += (mouseX - ringX) * 0.15;
+                ringY += (mouseY - ringY) * 0.15;
+                if (cursorRing) {
+                    cursorRing.style.left = `${ringX}px`;
+                    cursorRing.style.top = `${ringY}px`;
+                }
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const flipCards = document.querySelectorAll('.js-flip-card');
+
+            // Set up IntersectionObserver for mobile auto-flipping when scrolling
+            if ('IntersectionObserver' in window) {
+                const observerOptions = {
+                    root: null,
+                    rootMargin: '-15% 0px -15% 0px',
+                    threshold: 0.55 // When 55% of the card is in viewport center
+                };
+
+                const cardObserver = new IntersectionObserver((entries) => {
+                    // Check if current device is touch / mobile screen size
+                    const isTouchOrSmall = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
+                    
+                    if (isTouchOrSmall) {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add('is-flipped');
+                            } else {
+                                entry.target.classList.remove('is-flipped');
+                            }
+                        });
+                    }
+                }, observerOptions);
+
+                flipCards.forEach(card => cardObserver.observe(card));
+            }
+
+            // Click / Tap toggle fallback for touch users
+            flipCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    // If button inside was clicked, don't prevent button action
+                    if (e.target.closest('button')) return;
+                    card.classList.toggle('is-flipped');
+                });
+            });
+
+            const categoryBtns = document.querySelectorAll('.cat-btn');
+            const menuCards = document.querySelectorAll('.menu-item-card');
+            const searchInput = document.getElementById('menu-search');
+
+            function filterMenu() {
+                const activeCatBtn = document.querySelector('.cat-btn.active');
+                const cat = activeCatBtn ? activeCatBtn.getAttribute('data-category') : 'all';
+                const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+                menuCards.forEach(card => {
+                    const itemCat = card.getAttribute('data-category');
+                    const itemName = card.getAttribute('data-name');
+                    
+                    const matchesCat = (cat === 'all' || itemCat === cat);
+                    const matchesSearch = (!query || itemName.includes(query));
+
+                    if (matchesCat && matchesSearch) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    categoryBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-mint', 'text-navy');
+                        b.classList.add('bg-navy-card', 'text-ivory-muted');
+                    });
+                    btn.classList.add('active', 'bg-mint', 'text-navy');
+                    btn.classList.remove('bg-navy-card', 'text-ivory-muted');
+                    filterMenu();
+                });
+            });
+
+            if (searchInput) {
+                searchInput.addEventListener('input', filterMenu);
+            }
+
+            const feedbackBtn = document.getElementById('submit-feedback-btn');
+            if (feedbackBtn) {
+                feedbackBtn.addEventListener('click', () => {
+                    showToast('Thank you! Your feedback was sent to KEKU Cafe.');
+                    document.getElementById('feedback-text').value = '';
+                });
+            }
+
+            // Close demo top banner
+            const closeDemoBannerBtn = document.getElementById('close-demo-banner');
+            if (closeDemoBannerBtn) {
+                closeDemoBannerBtn.addEventListener('click', () => {
+                    const banner = closeDemoBannerBtn.parentElement;
+                    if (banner) banner.style.display = 'none';
+                });
+            }
+        });
+
+        const cartDrawer = document.getElementById('cart-drawer');
+        const cartOverlay = document.getElementById('cart-drawer-overlay');
+        const openCartBtn = document.getElementById('open-cart-btn');
+        const closeCartBtn = document.getElementById('close-cart-btn');
+
+        function openCart() {
+            if (cartDrawer && cartOverlay) {
+                cartDrawer.classList.remove('translate-x-full');
+                cartOverlay.classList.remove('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        function closeCart() {
+            if (cartDrawer && cartOverlay) {
+                cartDrawer.classList.add('translate-x-full');
+                cartOverlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        if (openCartBtn) openCartBtn.addEventListener('click', openCart);
+        if (closeCartBtn) closeCartBtn.addEventListener('click', closeCart);
+        if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+
+        function addToCart(id, name, price, img) {
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ id, name, price, img, qty: 1 });
+            }
+            updateCartUI();
+            showToast(`Added "${name}" to cart`);
+            openCart();
+        }
+
+        function updateQty(id, change) {
+            const item = cart.find(i => i.id === id);
+            if (!item) return;
+            item.qty += change;
+            if (item.qty <= 0) {
+                cart = cart.filter(i => i.id !== id);
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById('cart-items-list');
+            const cartBadge = document.getElementById('cart-badge');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const totalEl = document.getElementById('cart-total');
+            const checkoutBtn = document.getElementById('whatsapp-checkout-btn');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            const totalSum = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            // Update Badge
+            if (cartBadge) {
+                cartBadge.innerText = totalItems;
+                if (totalItems > 0) {
+                    cartBadge.classList.remove('scale-0');
+                } else {
+                    cartBadge.classList.add('scale-0');
+                }
+            }
+
+            // Render Items
+            if (cartItemsContainer) {
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = `
+                        <div id="empty-cart-msg" class="text-center py-12 space-y-3">
+                            <i class="fa-solid fa-mug-saucer text-4xl text-ivory-muted/40"></i>
+                            <p class="text-sm text-ivory-muted">Your order basket is currently empty.</p>
+                            <a href="#menu" onclick="closeCart()" class="inline-block text-xs font-semibold text-mint hover:underline">
+                                Browse Full Menu &rarr;
+                            </a>
+                        </div>
+                    `;
+                    if (checkoutBtn) checkoutBtn.disabled = true;
+                } else {
+                    cartItemsContainer.innerHTML = cart.map(item => `
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-navy border border-navy-border">
+                            <div class="flex items-center space-x-3">
+                                <img src="${item.img}" alt="${item.name}" class="w-12 h-12 object-cover rounded-lg">
+                                <div>
+                                    <h4 class="text-xs font-bold text-ivory">${item.name}</h4>
+                                    <div class="text-[11px] text-mint">LKR ${item.price.toLocaleString()}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="updateQty('${item.id}', -1)" class="w-6 h-6 rounded-md bg-navy-card text-ivory hover:text-coral text-xs flex items-center justify-center border border-navy-border">-</button>
+                                <span class="text-xs font-bold text-ivory px-1">${item.qty}</span>
+                                <button onclick="updateQty('${item.id}', 1)" class="w-6 h-6 rounded-md bg-navy-card text-ivory hover:text-mint text-xs flex items-center justify-center border border-navy-border">+</button>
+                            </div>
+                        </div>
+                    `).join('');
+                    if (checkoutBtn) checkoutBtn.disabled = false;
+                }
+            }
+
+            if (subtotalEl) subtotalEl.innerText = `LKR ${totalSum.toLocaleString()}`;
+            if (totalEl) totalEl.innerText = `LKR ${totalSum.toLocaleString()}`;
+        }
+
+        function submitOrderWhatsApp() {
+            if (cart.length === 0) return;
+
+            let message = `*NEW ORDER - KEKU CAFE (DEMO)*\n\n`;
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                message += `${index + 1}. ${item.name} x${item.qty} = LKR ${itemTotal.toLocaleString()}\n`;
+            });
+
+            message += `\n*Total Amount:* LKR ${total.toLocaleString()}`;
+            message += `\n*Location:* Nugegoda, Sri Lanka`;
+            message += `\n_Submitted via KEKU Cafe Digital Demo_`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/94707593440?text=${encodedMessage}`;
+
+            window.open(whatsappURL, '_blank');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            if (toast && toastMsg) {
+                toastMsg.innerText = msg;
+                toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>
